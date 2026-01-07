@@ -1,53 +1,204 @@
-> Edited for use in IDX on 07/09/12
+# Tinder2 - Aplicación de Citas
 
-# Welcome to your Expo app 👋
+Una aplicación móvil tipo Tinder desarrollada con React Native, Expo y Supabase.
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+## 🚀 Características
 
-## Get started
+- **Autenticación**: Login y registro de usuarios con Supabase Auth
+- **Perfil de Usuario**: Creación y edición de perfiles con fotos múltiples
+- **Sistema de Swipe**: Like/Dislike de otros usuarios
+- **Matching**: Detección automática de matches cuando dos usuarios se dan like mutuamente
+- **Notificaciones**: Sistema de notificaciones para likes y matches
+- **Carga de Fotos**: Subir fotos desde galería o tomar con la cámara
+- **Base de Datos**: Supabase como backend con Row Level Security
 
-#### Android
+## 🛠️ Tecnologías
 
-Android previews are defined as a `workspace.onStart` hook and started as a vscode task when the workspace is opened/started.
+- **React Native** - Framework para desarrollo móvil
+- **Expo** - Plataforma de desarrollo y herramientas
+- **TypeScript** - Lenguaje de programación tipado
+- **Supabase** - Backend as a Service (autenticación, base de datos, storage)
+- **Lucide Icons** - Biblioteca de iconos
+- **Expo Router** - Navegación basada en archivos
+- **Expo Image Picker** - Selección de imágenes y cámara
 
-Note, if you can't find the task, either:
-- Rebuild the environment (using command palette: `IDX: Rebuild Environment`), or
-- Run `npm run android -- --tunnel` command manually run android and see the output in your terminal. The device should pick up this new command and switch to start displaying the output from it.
+## 📋 Prerequisitos
 
-In the output of this command/task, you'll find options to open the app in a
+- Node.js (v16 o superior)
+- npm o yarn
+- Cuenta en Supabase
+- Expo CLI (opcional, se incluye en el proyecto)
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## 🔧 Instalación
 
-You'll also find options to open the app's developer menu, reload the app, and more.
-
-#### Web
-
-Web previews will be started and managred automatically. Use the toolbar to manually refresh.
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
+1. Clonar el repositorio:
 ```bash
-npm run reset-project
+git clone https://github.com/siramong/tinder2.git
+cd tinder2
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+2. Instalar dependencias:
+```bash
+npm install
+```
 
-## Learn more
+3. Configurar variables de entorno:
+```bash
+cp .env.example .env
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+4. Editar `.env` con tus credenciales de Supabase:
+```
+EXPO_PUBLIC_SUPABASE_URL=tu_url_de_supabase
+EXPO_PUBLIC_SUPABASE_ANON_KEY=tu_clave_anonima_de_supabase
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+5. Configurar la base de datos en Supabase siguiendo las instrucciones en `SUPABASE_SETUP.md`
 
-## Join the community
+## 🚀 Ejecutar la aplicación
 
-Join our community of developers creating universal apps.
+### Desarrollo
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+```bash
+# Iniciar el servidor de desarrollo
+npm start
+
+# Para Android
+npm run android
+
+# Para iOS
+npm run ios
+
+# Para Web
+npm run web
+```
+
+### Producción
+
+```bash
+# Build para Android
+expo build:android
+
+# Build para iOS
+expo build:ios
+```
+
+## 📁 Estructura del Proyecto
+
+```
+tinder2/
+├── app/                    # Rutas de navegación (Expo Router)
+│   ├── _layout.tsx        # Layout raíz con AuthProvider
+│   ├── index.tsx          # Página de inicio (redirige a login)
+│   ├── login.tsx          # Ruta de login
+│   ├── register.tsx       # Ruta de registro
+│   ├── profile.tsx        # Ruta de perfil
+│   ├── main.tsx           # Pantalla principal (swipe)
+│   └── notifications.tsx  # Pantalla de notificaciones
+├── src/
+│   ├── components/        # Componentes reutilizables
+│   ├── constants/         # Constantes y tema
+│   │   └── theme.ts       # Paleta de colores y estilos
+│   ├── screens/           # Pantallas de la aplicación
+│   │   ├── LoginScreen.tsx
+│   │   ├── RegisterScreen.tsx
+│   │   ├── ProfileScreen.tsx
+│   │   ├── MainScreen.tsx
+│   │   └── NotificationsScreen.tsx
+│   ├── services/          # Servicios y lógica de negocio
+│   │   ├── supabase.ts    # Cliente de Supabase
+│   │   └── AuthContext.tsx # Contexto de autenticación
+│   ├── types/             # Tipos TypeScript
+│   │   └── index.ts
+│   └── utils/             # Utilidades
+├── assets/                # Recursos estáticos
+├── .env.example           # Ejemplo de variables de entorno
+├── SUPABASE_SETUP.md      # Instrucciones de configuración de Supabase
+└── package.json
+```
+
+## 🎨 Paleta de Colores
+
+La aplicación utiliza una paleta de colores morada/púrpura en lugar del tradicional naranja/rosa de Tinder:
+
+- **Primary**: #8B5CF6 (Morado vibrante)
+- **Like**: #10B981 (Verde)
+- **Dislike**: #EF4444 (Rojo)
+- **Super Like**: #3B82F6 (Azul)
+
+## 📱 Funcionalidades Principales
+
+### Autenticación
+- Login con email y contraseña
+- Registro de nuevos usuarios
+- Verificación de email
+- Persistencia de sesión
+
+### Perfil
+- Nombre, biografía, fecha de nacimiento
+- Género e intereses
+- Hasta 6 fotos de perfil
+- Subir desde galería o tomar con cámara
+
+### Swipe y Matching
+- Vista de tarjetas de usuarios compatibles
+- Swipe para dar like o dislike
+- Detección automática de matches
+- Filtrado por preferencias de género
+
+### Notificaciones
+- Notificaciones de likes recibidos
+- Notificaciones de nuevos matches
+- Lista de notificaciones con fecha
+
+## 🔐 Seguridad
+
+- Autenticación mediante Supabase Auth
+- Row Level Security (RLS) en todas las tablas
+- Políticas de acceso granulares
+- Variables de entorno para credenciales
+
+## 📝 Base de Datos
+
+La aplicación utiliza las siguientes tablas en Supabase:
+
+- `profiles` - Perfiles de usuarios
+- `likes` - Registro de likes entre usuarios
+- `matches` - Matches confirmados
+- `notifications` - Notificaciones de usuarios
+
+Ver `SUPABASE_SETUP.md` para más detalles sobre el esquema.
+
+## 🤝 Contribuir
+
+Las contribuciones son bienvenidas. Por favor:
+
+1. Fork el proyecto
+2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+3. Commit tus cambios siguiendo el formato:
+   ```
+   emoji tipo_commit(archivo): Titulo
+   - Cambio 1
+   - Cambio 2
+   ```
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abre un Pull Request
+
+## 📄 Licencia
+
+Este proyecto es de código abierto y está disponible bajo la licencia MIT.
+
+## 👥 Autores
+
+- [@siramong](https://github.com/siramong)
+
+## 🙏 Agradecimientos
+
+- Tinder por la inspiración
+- Supabase por el backend
+- Expo por las herramientas de desarrollo
+- La comunidad de React Native
+
+---
+
+> Editado para uso en IDX el 07/09/12
