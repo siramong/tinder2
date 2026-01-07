@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   FlatList,
   TouchableOpacity,
   Image,
@@ -13,7 +12,6 @@ import { Heart, ArrowLeft } from 'lucide-react-native';
 import { useAuth } from '../services/AuthContext';
 import { supabase } from '../services/supabase';
 import { Notification } from '../types';
-import { colors, spacing, fontSize, borderRadius, fontWeight, shadows } from '../constants/theme';
 
 export default function NotificationsScreen() {
   const { user } = useAuth();
@@ -41,7 +39,6 @@ export default function NotificationsScreen() {
 
       setNotifications(data || []);
 
-      // Marcar como leídas
       await supabase
         .from('notifications')
         .update({ read: true })
@@ -61,7 +58,13 @@ export default function NotificationsScreen() {
   };
 
   const getNotificationIcon = (type: string) => {
-    return <Heart size={24} color={type === 'match' ? colors.primary : colors.like} fill={type === 'match' ? colors.primary : 'transparent'} />;
+    return (
+      <Heart
+        size={24}
+        color={type === 'match' ? '#8B5CF6' : '#10B981'}
+        fill={type === 'match' ? '#8B5CF6' : 'transparent'}
+      />
+    );
   };
 
   const getNotificationText = (notification: Notification) => {
@@ -93,54 +96,60 @@ export default function NotificationsScreen() {
   };
 
   const renderNotification = ({ item }: { item: Notification }) => (
-    <TouchableOpacity style={styles.notificationCard}>
-      <View style={styles.notificationIcon}>
-        {getNotificationIcon(item.type)}
-      </View>
+    <TouchableOpacity className="flex-row items-center bg-gray-50 rounded-2xl p-4 mb-4 shadow-sm">
+      <View className="mr-4">{getNotificationIcon(item.type)}</View>
       {item.from_user_photo && (
         <Image
           source={{ uri: item.from_user_photo }}
-          style={styles.notificationPhoto}
+          className="w-12 h-12 rounded-full mr-4"
         />
       )}
-      <View style={styles.notificationContent}>
-        <Text style={styles.notificationText}>{getNotificationText(item)}</Text>
-        <Text style={styles.notificationDate}>{formatDate(item.created_at)}</Text>
+      <View className="flex-1">
+        <Text className="text-base font-medium text-gray-900">
+          {getNotificationText(item)}
+        </Text>
+        <Text className="text-sm text-gray-600 mt-1">{formatDate(item.created_at)}</Text>
       </View>
     </TouchableOpacity>
   );
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
+    <View className="flex-1 bg-white">
+      <View className="flex-row justify-between items-center px-6 pt-12 pb-4 border-b border-gray-200">
         <TouchableOpacity onPress={() => router.back()}>
-          <ArrowLeft size={28} color={colors.text} />
+          <ArrowLeft size={28} color="#111827" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Notificaciones</Text>
+        <Text className="text-2xl font-bold text-gray-900">Notificaciones</Text>
         <View style={{ width: 28 }} />
       </View>
 
       {loading ? (
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>Cargando notificaciones...</Text>
+        <View className="flex-1 justify-center items-center px-8">
+          <Text className="text-xl font-semibold text-gray-900 mt-6 text-center">
+            Cargando notificaciones...
+          </Text>
         </View>
       ) : notifications.length === 0 ? (
-        <View style={styles.emptyContainer}>
-          <Heart size={64} color={colors.textLight} />
-          <Text style={styles.emptyText}>No tienes notificaciones</Text>
-          <Text style={styles.emptySubtext}>Cuando alguien te dé like, aparecerá aquí</Text>
+        <View className="flex-1 justify-center items-center px-8">
+          <Heart size={64} color="#9CA3AF" />
+          <Text className="text-xl font-semibold text-gray-900 mt-6 text-center">
+            No tienes notificaciones
+          </Text>
+          <Text className="text-base text-gray-600 mt-2 text-center">
+            Cuando alguien te dé like, aparecerá aquí
+          </Text>
         </View>
       ) : (
         <FlatList
           data={notifications}
           renderItem={renderNotification}
           keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.listContent}
+          contentContainerClassName="p-6"
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
-              tintColor={colors.primary}
+              tintColor="#8B5CF6"
             />
           }
         />
@@ -148,78 +157,3 @@ export default function NotificationsScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.xl,
-    paddingBottom: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  headerTitle: {
-    fontSize: fontSize.xl,
-    fontWeight: fontWeight.bold,
-    color: colors.text,
-  },
-  listContent: {
-    padding: spacing.lg,
-  },
-  notificationCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.card,
-    borderRadius: borderRadius.lg,
-    padding: spacing.md,
-    marginBottom: spacing.md,
-    ...shadows.small,
-  },
-  notificationIcon: {
-    marginRight: spacing.md,
-  },
-  notificationPhoto: {
-    width: 50,
-    height: 50,
-    borderRadius: borderRadius.full,
-    marginRight: spacing.md,
-  },
-  notificationContent: {
-    flex: 1,
-  },
-  notificationText: {
-    fontSize: fontSize.md,
-    fontWeight: fontWeight.medium,
-    color: colors.text,
-  },
-  notificationDate: {
-    fontSize: fontSize.sm,
-    color: colors.textSecondary,
-    marginTop: spacing.xs,
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: spacing.xl,
-  },
-  emptyText: {
-    fontSize: fontSize.xl,
-    fontWeight: fontWeight.semibold,
-    color: colors.text,
-    marginTop: spacing.lg,
-    textAlign: 'center',
-  },
-  emptySubtext: {
-    fontSize: fontSize.md,
-    color: colors.textSecondary,
-    marginTop: spacing.sm,
-    textAlign: 'center',
-  },
-});

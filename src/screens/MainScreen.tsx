@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   Dimensions,
   TouchableOpacity,
   Image,
@@ -13,7 +12,6 @@ import { Heart, X, Bell, User as UserIcon, Info } from 'lucide-react-native';
 import { useAuth } from '../services/AuthContext';
 import { supabase } from '../services/supabase';
 import { Profile } from '../types';
-import { colors, spacing, fontSize, borderRadius, fontWeight, shadows } from '../constants/theme';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -39,7 +37,6 @@ export default function MainScreen() {
     try {
       setLoading(true);
 
-      // Obtener IDs de usuarios ya likeados
       const { data: likedUsers } = await supabase
         .from('likes')
         .select('liked_id')
@@ -47,13 +44,11 @@ export default function MainScreen() {
 
       const likedIds = likedUsers?.map((like) => like.liked_id) || [];
 
-      // Obtener perfiles disponibles
       let query = supabase
         .from('profiles')
         .select('*')
         .neq('user_id', user.id);
 
-      // Filtrar por preferencias
       if (profile.interested_in === 'hombres') {
         query = query.eq('gender', 'hombre');
       } else if (profile.interested_in === 'mujeres') {
@@ -64,7 +59,6 @@ export default function MainScreen() {
 
       if (error) throw error;
 
-      // Filtrar usuarios ya likeados
       const availableProfiles = data?.filter(
         (p) => !likedIds.includes(p.user_id)
       ) || [];
@@ -83,7 +77,6 @@ export default function MainScreen() {
     const likedProfile = profiles[currentIndex];
     
     try {
-      // Guardar like
       const { error: likeError } = await supabase
         .from('likes')
         .insert({
@@ -93,7 +86,6 @@ export default function MainScreen() {
 
       if (likeError) throw likeError;
 
-      // Verificar si es un match
       const { data: reciprocalLike } = await supabase
         .from('likes')
         .select('*')
@@ -102,7 +94,6 @@ export default function MainScreen() {
         .single();
 
       if (reciprocalLike) {
-        // Es un match!
         const { error: matchError } = await supabase
           .from('matches')
           .insert({
@@ -114,7 +105,6 @@ export default function MainScreen() {
 
         if (matchError) throw matchError;
 
-        // Crear notificación para el otro usuario
         await supabase.from('notifications').insert({
           user_id: likedProfile.user_id,
           type: 'match',
@@ -130,7 +120,6 @@ export default function MainScreen() {
           [{ text: 'Genial!', style: 'default' }]
         );
       } else {
-        // Solo like, crear notificación
         await supabase.from('notifications').insert({
           user_id: likedProfile.user_id,
           type: 'like',
@@ -161,12 +150,14 @@ export default function MainScreen() {
 
   if (loading) {
     return (
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Heart size={32} color={colors.primary} fill={colors.primary} />
+      <View className="flex-1 bg-white">
+        <View className="flex-row justify-between items-center px-6 pt-12 pb-4">
+          <Heart size={32} color="#8B5CF6" fill="#8B5CF6" />
         </View>
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>Cargando perfiles...</Text>
+        <View className="flex-1 justify-center items-center px-8">
+          <Text className="text-xl font-semibold text-gray-900 mt-6 text-center">
+            Cargando perfiles...
+          </Text>
         </View>
       </View>
     );
@@ -175,184 +166,81 @@ export default function MainScreen() {
   const currentProfile = profiles[currentIndex];
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
+    <View className="flex-1 bg-white">
+      <View className="flex-row justify-between items-center px-6 pt-12 pb-4">
         <TouchableOpacity onPress={goToProfile}>
-          <UserIcon size={28} color={colors.primary} />
+          <UserIcon size={28} color="#8B5CF6" />
         </TouchableOpacity>
-        <Heart size={32} color={colors.primary} fill={colors.primary} />
+        <Heart size={32} color="#8B5CF6" fill="#8B5CF6" />
         <TouchableOpacity onPress={goToNotifications}>
-          <Bell size={28} color={colors.primary} />
+          <Bell size={28} color="#8B5CF6" />
         </TouchableOpacity>
       </View>
 
       {currentProfile ? (
         <>
-          <View style={styles.cardContainer}>
-            <View style={[styles.card, shadows.large]}>
+          <View className="flex-1 justify-center items-center px-6">
+            <View 
+              className="bg-gray-50 rounded-3xl overflow-hidden shadow-lg"
+              style={{ width: SCREEN_WIDTH - 48, height: SCREEN_HEIGHT * 0.65 }}
+            >
               <Image
                 source={{ uri: currentProfile.photos[0] }}
-                style={styles.cardImage}
+                className="w-full h-full"
                 resizeMode="cover"
               />
-              <View style={styles.cardInfo}>
+              <View className="absolute bottom-0 left-0 right-0 p-6 bg-black/50 flex-row justify-between items-end">
                 <View>
-                  <Text style={styles.cardName}>
+                  <Text className="text-white text-2xl font-bold">
                     {currentProfile.name}
                     {currentProfile.age && `, ${currentProfile.age}`}
                   </Text>
                   {currentProfile.bio && (
-                    <Text style={styles.cardBio} numberOfLines={2}>
+                    <Text className="text-white text-base mt-1" numberOfLines={2}>
                       {currentProfile.bio}
                     </Text>
                   )}
                 </View>
-                <TouchableOpacity style={styles.infoButton}>
-                  <Info size={24} color={colors.primary} />
+                <TouchableOpacity className="bg-white rounded-full p-2">
+                  <Info size={24} color="#8B5CF6" />
                 </TouchableOpacity>
               </View>
             </View>
           </View>
 
-          <View style={styles.actions}>
+          <View className="flex-row justify-center items-center py-8 gap-8">
             <TouchableOpacity
-              style={[styles.actionButton, styles.dislikeButton]}
+              className="w-16 h-16 rounded-full justify-center items-center bg-white border-2 border-dislike shadow-md"
               onPress={handleDislike}
             >
-              <X size={32} color={colors.dislike} />
+              <X size={32} color="#EF4444" />
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.actionButton, styles.likeButton]}
+              className="w-16 h-16 rounded-full justify-center items-center bg-white border-2 border-like shadow-md"
               onPress={handleLike}
             >
-              <Heart size={32} color={colors.like} />
+              <Heart size={32} color="#10B981" />
             </TouchableOpacity>
           </View>
         </>
       ) : (
-        <View style={styles.emptyContainer}>
-          <Heart size={64} color={colors.textLight} />
-          <Text style={styles.emptyText}>No hay más perfiles por ahora</Text>
-          <Text style={styles.emptySubtext}>Vuelve más tarde</Text>
-          <TouchableOpacity style={styles.reloadButton} onPress={loadProfiles}>
-            <Text style={styles.reloadButtonText}>Recargar</Text>
+        <View className="flex-1 justify-center items-center px-8">
+          <Heart size={64} color="#9CA3AF" />
+          <Text className="text-xl font-semibold text-gray-900 mt-6 text-center">
+            No hay más perfiles por ahora
+          </Text>
+          <Text className="text-base text-gray-600 mt-2 text-center">
+            Vuelve más tarde
+          </Text>
+          <TouchableOpacity
+            className="mt-8 bg-primary px-8 py-4 rounded-2xl"
+            onPress={loadProfiles}
+          >
+            <Text className="text-white text-base font-semibold">Recargar</Text>
           </TouchableOpacity>
         </View>
       )}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.xl,
-    paddingBottom: spacing.md,
-  },
-  cardContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-  },
-  card: {
-    width: SCREEN_WIDTH - spacing.xl * 2,
-    height: SCREEN_HEIGHT * 0.65,
-    borderRadius: borderRadius.xl,
-    backgroundColor: colors.card,
-    overflow: 'hidden',
-  },
-  cardImage: {
-    width: '100%',
-    height: '100%',
-  },
-  cardInfo: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: spacing.lg,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end',
-  },
-  cardName: {
-    fontSize: fontSize.xl,
-    fontWeight: fontWeight.bold,
-    color: colors.textDark,
-  },
-  cardBio: {
-    fontSize: fontSize.md,
-    color: colors.textDark,
-    marginTop: spacing.xs,
-  },
-  infoButton: {
-    backgroundColor: colors.background,
-    borderRadius: borderRadius.full,
-    padding: spacing.xs,
-  },
-  actions: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: spacing.xl,
-    gap: spacing.xl,
-  },
-  actionButton: {
-    width: 64,
-    height: 64,
-    borderRadius: borderRadius.full,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.background,
-    ...shadows.medium,
-  },
-  dislikeButton: {
-    borderWidth: 2,
-    borderColor: colors.dislike,
-  },
-  likeButton: {
-    borderWidth: 2,
-    borderColor: colors.like,
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: spacing.xl,
-  },
-  emptyText: {
-    fontSize: fontSize.xl,
-    fontWeight: fontWeight.semibold,
-    color: colors.text,
-    marginTop: spacing.lg,
-    textAlign: 'center',
-  },
-  emptySubtext: {
-    fontSize: fontSize.md,
-    color: colors.textSecondary,
-    marginTop: spacing.sm,
-    textAlign: 'center',
-  },
-  reloadButton: {
-    marginTop: spacing.xl,
-    backgroundColor: colors.primary,
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.md,
-    borderRadius: borderRadius.lg,
-  },
-  reloadButtonText: {
-    color: colors.textDark,
-    fontSize: fontSize.md,
-    fontWeight: fontWeight.semibold,
-  },
-});

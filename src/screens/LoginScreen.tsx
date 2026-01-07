@@ -4,7 +4,6 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -13,7 +12,6 @@ import {
 import { useRouter } from 'expo-router';
 import { Heart } from 'lucide-react-native';
 import { useAuth } from '../services/AuthContext';
-import { colors, spacing, fontSize, borderRadius, fontWeight } from '../constants/theme';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -31,7 +29,6 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       await signIn(email, password);
-      // La navegación se maneja automáticamente por el AuthContext
     } catch (error: any) {
       Alert.alert('Error', error.message || 'Error al iniciar sesión');
     } finally {
@@ -46,23 +43,27 @@ export default function LoginScreen() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}
+      className="flex-1 bg-white"
     >
       <ScrollView
-        contentContainerStyle={styles.scrollContent}
+        contentContainerClassName="flex-grow justify-center px-6"
         keyboardShouldPersistTaps="handled"
       >
-        <View style={styles.header}>
-          <Heart size={64} color={colors.primary} fill={colors.primary} />
-          <Text style={styles.title}>Bienvenido</Text>
-          <Text style={styles.subtitle}>Encuentra tu match perfecto</Text>
+        <View className="items-center mb-12">
+          <Heart size={64} color="#8B5CF6" fill="#8B5CF6" />
+          <Text className="text-5xl font-bold text-gray-900 mt-4">
+            Bienvenido
+          </Text>
+          <Text className="text-base text-gray-600 mt-1">
+            Encuentra tu match perfecto
+          </Text>
         </View>
 
-        <View style={styles.form}>
+        <View className="w-full">
           <TextInput
-            style={styles.input}
+            className="bg-gray-50 rounded-lg p-4 text-base text-gray-900 mb-4 border border-gray-200"
             placeholder="Correo electrónico"
-            placeholderTextColor={colors.textLight}
+            placeholderTextColor="#9CA3AF"
             value={email}
             onChangeText={setEmail}
             autoCapitalize="none"
@@ -71,9 +72,9 @@ export default function LoginScreen() {
           />
 
           <TextInput
-            style={styles.input}
+            className="bg-gray-50 rounded-lg p-4 text-base text-gray-900 mb-4 border border-gray-200"
             placeholder="Contraseña"
-            placeholderTextColor={colors.textLight}
+            placeholderTextColor="#9CA3AF"
             value={password}
             onChangeText={setPassword}
             secureTextEntry
@@ -81,22 +82,23 @@ export default function LoginScreen() {
           />
 
           <TouchableOpacity
-            style={[styles.button, loading && styles.buttonDisabled]}
+            className={`bg-primary rounded-2xl p-4 items-center mt-4 ${loading ? 'opacity-60' : ''}`}
             onPress={handleLogin}
             disabled={loading}
           >
-            <Text style={styles.buttonText}>
+            <Text className="text-white text-lg font-semibold">
               {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.linkButton}
+            className="mt-6 items-center"
             onPress={handleRegister}
             disabled={loading}
           >
-            <Text style={styles.linkText}>
-              ¿No tienes cuenta? <Text style={styles.linkTextBold}>Regístrate</Text>
+            <Text className="text-gray-600 text-base">
+              ¿No tienes cuenta?{' '}
+              <Text className="text-primary font-bold">Regístrate</Text>
             </Text>
           </TouchableOpacity>
         </View>
@@ -104,70 +106,3 @@ export default function LoginScreen() {
     </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    padding: spacing.lg,
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: spacing.xxl,
-  },
-  title: {
-    fontSize: fontSize.xxxl,
-    fontWeight: fontWeight.bold,
-    color: colors.text,
-    marginTop: spacing.md,
-  },
-  subtitle: {
-    fontSize: fontSize.md,
-    color: colors.textSecondary,
-    marginTop: spacing.xs,
-  },
-  form: {
-    width: '100%',
-  },
-  input: {
-    backgroundColor: colors.card,
-    borderRadius: borderRadius.md,
-    padding: spacing.md,
-    fontSize: fontSize.md,
-    color: colors.text,
-    marginBottom: spacing.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  button: {
-    backgroundColor: colors.primary,
-    borderRadius: borderRadius.lg,
-    padding: spacing.md,
-    alignItems: 'center',
-    marginTop: spacing.md,
-  },
-  buttonDisabled: {
-    opacity: 0.6,
-  },
-  buttonText: {
-    color: colors.textDark,
-    fontSize: fontSize.lg,
-    fontWeight: fontWeight.semibold,
-  },
-  linkButton: {
-    marginTop: spacing.lg,
-    alignItems: 'center',
-  },
-  linkText: {
-    color: colors.textSecondary,
-    fontSize: fontSize.md,
-  },
-  linkTextBold: {
-    color: colors.primary,
-    fontWeight: fontWeight.bold,
-  },
-});

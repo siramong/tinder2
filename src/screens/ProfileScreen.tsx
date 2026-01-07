@@ -4,7 +4,6 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
   ScrollView,
   Alert,
   Image,
@@ -15,7 +14,6 @@ import * as ImagePicker from 'expo-image-picker';
 import { Camera, Image as ImageIcon, User, Trash2 } from 'lucide-react-native';
 import { useAuth } from '../services/AuthContext';
 import { supabase } from '../services/supabase';
-import { colors, spacing, fontSize, borderRadius, fontWeight, shadows } from '../constants/theme';
 
 export default function ProfileScreen() {
   const { profile, updateProfile, user } = useAuth();
@@ -93,23 +91,19 @@ export default function ProfileScreen() {
     try {
       setLoading(true);
       
-      // Crear un nombre único para el archivo
       const fileExt = uri.split('.').pop();
       const fileName = `${user.id}-${Date.now()}.${fileExt}`;
       const filePath = `${user.id}/${fileName}`;
 
-      // Obtener el blob del archivo
       const response = await fetch(uri);
       const blob = await response.blob();
 
-      // Subir a Supabase Storage
       const { error: uploadError } = await supabase.storage
         .from('photos')
         .upload(filePath, blob);
 
       if (uploadError) throw uploadError;
 
-      // Obtener URL pública
       const { data: { publicUrl } } = supabase.storage
         .from('photos')
         .getPublicUrl(filePath);
@@ -167,37 +161,43 @@ export default function ProfileScreen() {
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <View style={styles.header}>
-        <User size={48} color={colors.primary} />
-        <Text style={styles.title}>Tu Perfil</Text>
-        <Text style={styles.subtitle}>Cuéntanos sobre ti</Text>
+    <ScrollView className="flex-1 bg-white p-6">
+      <View className="items-center mb-8">
+        <User size={48} color="#8B5CF6" />
+        <Text className="text-3xl font-bold text-gray-900 mt-2">Tu Perfil</Text>
+        <Text className="text-base text-gray-600 mt-1">Cuéntanos sobre ti</Text>
       </View>
 
       {/* Fotos */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Fotos (máximo 6)</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.photosScroll}>
+      <View className="mb-8">
+        <Text className="text-lg font-semibold text-gray-900 mb-4">Fotos (máximo 6)</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
           {photos.map((photo, index) => (
-            <View key={index} style={styles.photoContainer}>
-              <Image source={{ uri: photo }} style={styles.photo} />
+            <View key={index} className="mr-4 relative">
+              <Image source={{ uri: photo }} className="w-30 h-40 rounded-2xl" />
               <TouchableOpacity
-                style={styles.deleteButton}
+                className="absolute top-1 right-1 bg-white rounded-full p-1 shadow-sm"
                 onPress={() => deletePhoto(index)}
               >
-                <Trash2 size={20} color={colors.error} />
+                <Trash2 size={20} color="#EF4444" />
               </TouchableOpacity>
             </View>
           ))}
           {photos.length < 6 && (
             <>
-              <TouchableOpacity style={styles.addPhotoButton} onPress={pickImage}>
-                <ImageIcon size={32} color={colors.primary} />
-                <Text style={styles.addPhotoText}>Galería</Text>
+              <TouchableOpacity
+                className="w-30 h-40 rounded-2xl bg-gray-50 border-2 border-dashed border-gray-300 justify-center items-center mr-4"
+                onPress={pickImage}
+              >
+                <ImageIcon size={32} color="#8B5CF6" />
+                <Text className="text-primary text-sm mt-1 font-medium">Galería</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.addPhotoButton} onPress={takePhoto}>
-                <Camera size={32} color={colors.primary} />
-                <Text style={styles.addPhotoText}>Cámara</Text>
+              <TouchableOpacity
+                className="w-30 h-40 rounded-2xl bg-gray-50 border-2 border-dashed border-gray-300 justify-center items-center mr-4"
+                onPress={takePhoto}
+              >
+                <Camera size={32} color="#8B5CF6" />
+                <Text className="text-primary text-sm mt-1 font-medium">Cámara</Text>
               </TouchableOpacity>
             </>
           )}
@@ -205,57 +205,58 @@ export default function ProfileScreen() {
       </View>
 
       {/* Información básica */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Información Básica</Text>
+      <View className="mb-8">
+        <Text className="text-lg font-semibold text-gray-900 mb-4">Información Básica</Text>
         
         <TextInput
-          style={styles.input}
+          className="bg-gray-50 rounded-lg p-4 text-base text-gray-900 mb-4 border border-gray-200"
           placeholder="Nombre"
-          placeholderTextColor={colors.textLight}
+          placeholderTextColor="#9CA3AF"
           value={name}
           onChangeText={setName}
           editable={!loading}
         />
 
         <TextInput
-          style={styles.input}
+          className="bg-gray-50 rounded-lg p-4 text-base text-gray-900 mb-4 border border-gray-200"
           placeholder="Fecha de nacimiento (DD/MM/AAAA)"
-          placeholderTextColor={colors.textLight}
+          placeholderTextColor="#9CA3AF"
           value={birthday}
           onChangeText={setBirthday}
           editable={!loading}
         />
 
         <TextInput
-          style={[styles.input, styles.textArea]}
+          className="bg-gray-50 rounded-lg p-4 text-base text-gray-900 mb-4 border border-gray-200 h-24"
           placeholder="Biografía"
-          placeholderTextColor={colors.textLight}
+          placeholderTextColor="#9CA3AF"
           value={bio}
           onChangeText={setBio}
           multiline
           numberOfLines={4}
+          textAlignVertical="top"
           editable={!loading}
         />
       </View>
 
       {/* Género */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Género</Text>
-        <View style={styles.optionsRow}>
-          {['hombre', 'mujer', 'otro'].map((option) => (
+      <View className="mb-8">
+        <Text className="text-lg font-semibold text-gray-900 mb-4">Género</Text>
+        <View className="flex-row gap-2">
+          {(['hombre', 'mujer', 'otro'] as const).map((option) => (
             <TouchableOpacity
               key={option}
-              style={[
-                styles.optionButton,
-                gender === option && styles.optionButtonActive,
-              ]}
-              onPress={() => setGender(option as any)}
+              className={`flex-1 p-4 rounded-lg border items-center ${
+                gender === option
+                  ? 'bg-primary border-primary'
+                  : 'bg-gray-50 border-gray-200'
+              }`}
+              onPress={() => setGender(option)}
             >
               <Text
-                style={[
-                  styles.optionText,
-                  gender === option && styles.optionTextActive,
-                ]}
+                className={`text-base font-medium ${
+                  gender === option ? 'text-white' : 'text-gray-900'
+                }`}
               >
                 {option.charAt(0).toUpperCase() + option.slice(1)}
               </Text>
@@ -265,23 +266,23 @@ export default function ProfileScreen() {
       </View>
 
       {/* Interesado en */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Interesado en</Text>
-        <View style={styles.optionsRow}>
-          {['hombres', 'mujeres', 'todos'].map((option) => (
+      <View className="mb-8">
+        <Text className="text-lg font-semibold text-gray-900 mb-4">Interesado en</Text>
+        <View className="flex-row gap-2">
+          {(['hombres', 'mujeres', 'todos'] as const).map((option) => (
             <TouchableOpacity
               key={option}
-              style={[
-                styles.optionButton,
-                interestedIn === option && styles.optionButtonActive,
-              ]}
-              onPress={() => setInterestedIn(option as any)}
+              className={`flex-1 p-4 rounded-lg border items-center ${
+                interestedIn === option
+                  ? 'bg-primary border-primary'
+                  : 'bg-gray-50 border-gray-200'
+              }`}
+              onPress={() => setInterestedIn(option)}
             >
               <Text
-                style={[
-                  styles.optionText,
-                  interestedIn === option && styles.optionTextActive,
-                ]}
+                className={`text-base font-medium ${
+                  interestedIn === option ? 'text-white' : 'text-gray-900'
+                }`}
               >
                 {option.charAt(0).toUpperCase() + option.slice(1)}
               </Text>
@@ -291,142 +292,14 @@ export default function ProfileScreen() {
       </View>
 
       <TouchableOpacity
-        style={[styles.saveButton, loading && styles.saveButtonDisabled]}
+        className={`bg-primary rounded-2xl p-4 items-center mt-4 mb-12 ${loading ? 'opacity-60' : ''}`}
         onPress={handleSave}
         disabled={loading}
       >
-        <Text style={styles.saveButtonText}>
+        <Text className="text-white text-lg font-semibold">
           {loading ? 'Guardando...' : 'Guardar Perfil'}
         </Text>
       </TouchableOpacity>
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  content: {
-    padding: spacing.lg,
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: spacing.xl,
-  },
-  title: {
-    fontSize: fontSize.xxl,
-    fontWeight: fontWeight.bold,
-    color: colors.text,
-    marginTop: spacing.sm,
-  },
-  subtitle: {
-    fontSize: fontSize.md,
-    color: colors.textSecondary,
-    marginTop: spacing.xs,
-  },
-  section: {
-    marginBottom: spacing.xl,
-  },
-  sectionTitle: {
-    fontSize: fontSize.lg,
-    fontWeight: fontWeight.semibold,
-    color: colors.text,
-    marginBottom: spacing.md,
-  },
-  photosScroll: {
-    flexDirection: 'row',
-  },
-  photoContainer: {
-    marginRight: spacing.md,
-    position: 'relative',
-  },
-  photo: {
-    width: 120,
-    height: 160,
-    borderRadius: borderRadius.lg,
-  },
-  deleteButton: {
-    position: 'absolute',
-    top: spacing.xs,
-    right: spacing.xs,
-    backgroundColor: colors.background,
-    borderRadius: borderRadius.full,
-    padding: spacing.xs,
-    ...shadows.small,
-  },
-  addPhotoButton: {
-    width: 120,
-    height: 160,
-    borderRadius: borderRadius.lg,
-    backgroundColor: colors.card,
-    borderWidth: 2,
-    borderColor: colors.border,
-    borderStyle: 'dashed',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: spacing.md,
-  },
-  addPhotoText: {
-    color: colors.primary,
-    fontSize: fontSize.sm,
-    marginTop: spacing.xs,
-    fontWeight: fontWeight.medium,
-  },
-  input: {
-    backgroundColor: colors.card,
-    borderRadius: borderRadius.md,
-    padding: spacing.md,
-    fontSize: fontSize.md,
-    color: colors.text,
-    marginBottom: spacing.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  textArea: {
-    height: 100,
-    textAlignVertical: 'top',
-  },
-  optionsRow: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-  },
-  optionButton: {
-    flex: 1,
-    padding: spacing.md,
-    borderRadius: borderRadius.md,
-    backgroundColor: colors.card,
-    borderWidth: 1,
-    borderColor: colors.border,
-    alignItems: 'center',
-  },
-  optionButtonActive: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
-  },
-  optionText: {
-    fontSize: fontSize.md,
-    color: colors.text,
-    fontWeight: fontWeight.medium,
-  },
-  optionTextActive: {
-    color: colors.textDark,
-  },
-  saveButton: {
-    backgroundColor: colors.primary,
-    borderRadius: borderRadius.lg,
-    padding: spacing.md,
-    alignItems: 'center',
-    marginTop: spacing.md,
-    marginBottom: spacing.xxl,
-  },
-  saveButtonDisabled: {
-    opacity: 0.6,
-  },
-  saveButtonText: {
-    color: colors.textDark,
-    fontSize: fontSize.lg,
-    fontWeight: fontWeight.semibold,
-  },
-});
