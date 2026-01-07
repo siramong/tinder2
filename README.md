@@ -57,6 +57,44 @@ EXPO_PUBLIC_SUPABASE_ANON_KEY=tu_clave_anonima_de_supabase
 
 5. Configurar la base de datos en Supabase siguiendo las instrucciones en `SUPABASE_SETUP.md`
 
+6. Limpiar la caché de Metro Bundler (recomendado después de instalar):
+```bash
+npx expo start -c
+```
+
+## 🎨 Uso de NativeWind/Tailwind CSS
+
+Este proyecto utiliza NativeWind para estilizar componentes con clases de Tailwind CSS.
+
+### Ejemplos de uso:
+
+```tsx
+// Estilos básicos
+<View className="flex-1 bg-white p-6">
+  <Text className="text-2xl font-bold text-gray-900">Título</Text>
+</View>
+
+// Clases condicionales
+<TouchableOpacity
+  className={`bg-primary rounded-2xl p-4 ${loading ? 'opacity-60' : ''}`}
+>
+  <Text className="text-white text-lg font-semibold">Botón</Text>
+</TouchableOpacity>
+
+// Colores personalizados (definidos en tailwind.config.js)
+<View className="bg-primary">  {/* #8B5CF6 */}
+<View className="bg-like">     {/* #10B981 */}
+<View className="bg-dislike">  {/* #EF4444 */}
+```
+
+### Configuración personalizada:
+
+La paleta de colores se define en `tailwind.config.js`:
+- `primary`: Morado vibrante (#8B5CF6)
+- `like`: Verde (#10B981)
+- `dislike`: Rojo (#EF4444)
+- `superlike`: Azul (#3B82F6)
+
 ## 🚀 Ejecutar la aplicación
 
 ### Desarrollo
