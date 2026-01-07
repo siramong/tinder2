@@ -17,6 +17,8 @@ Una aplicación móvil tipo Tinder desarrollada con React Native, Expo y Supabas
 - **React Native** - Framework para desarrollo móvil
 - **Expo** - Plataforma de desarrollo y herramientas
 - **TypeScript** - Lenguaje de programación tipado
+- **NativeWind** - Tailwind CSS para React Native
+- **Tailwind CSS** - Framework de utilidades CSS
 - **Supabase** - Backend as a Service (autenticación, base de datos, storage)
 - **Lucide Icons** - Biblioteca de iconos
 - **Expo Router** - Navegación basada en archivos
@@ -113,6 +115,10 @@ tinder2/
 │   └── utils/             # Utilidades
 ├── assets/                # Recursos estáticos
 ├── .env.example           # Ejemplo de variables de entorno
+├── babel.config.js        # Configuración de Babel con NativeWind
+├── metro.config.js        # Configuración de Metro con NativeWind
+├── tailwind.config.js     # Configuración de Tailwind CSS
+├── global.css             # Estilos globales de Tailwind
 ├── SUPABASE_SETUP.md      # Instrucciones de configuración de Supabase
 └── package.json
 ```

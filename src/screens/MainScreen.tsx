@@ -72,7 +72,7 @@ export default function MainScreen() {
   };
 
   const handleLike = async () => {
-    if (currentIndex >= profiles.length) return;
+    if (currentIndex >= profiles.length || !user || !profile) return;
 
     const likedProfile = profiles[currentIndex];
     
@@ -80,7 +80,7 @@ export default function MainScreen() {
       const { error: likeError } = await supabase
         .from('likes')
         .insert({
-          liker_id: user!.id,
+          liker_id: user.id,
           liked_id: likedProfile.user_id,
         });
 
@@ -90,14 +90,14 @@ export default function MainScreen() {
         .from('likes')
         .select('*')
         .eq('liker_id', likedProfile.user_id)
-        .eq('liked_id', user!.id)
+        .eq('liked_id', user.id)
         .single();
 
       if (reciprocalLike) {
         const { error: matchError } = await supabase
           .from('matches')
           .insert({
-            user1_id: user!.id,
+            user1_id: user.id,
             user2_id: likedProfile.user_id,
             notified_user1: true,
             notified_user2: false,
@@ -108,9 +108,9 @@ export default function MainScreen() {
         await supabase.from('notifications').insert({
           user_id: likedProfile.user_id,
           type: 'match',
-          from_user_id: user!.id,
-          from_user_name: profile!.name,
-          from_user_photo: profile!.photos[0],
+          from_user_id: user.id,
+          from_user_name: profile.name,
+          from_user_photo: profile.photos[0] || '',
           read: false,
         });
 
@@ -123,9 +123,9 @@ export default function MainScreen() {
         await supabase.from('notifications').insert({
           user_id: likedProfile.user_id,
           type: 'like',
-          from_user_id: user!.id,
-          from_user_name: profile!.name,
-          from_user_photo: profile!.photos[0],
+          from_user_id: user.id,
+          from_user_name: profile.name,
+          from_user_photo: profile.photos[0] || '',
           read: false,
         });
       }

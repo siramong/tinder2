@@ -91,7 +91,7 @@ export default function ProfileScreen() {
     try {
       setLoading(true);
       
-      const fileExt = uri.split('.').pop();
+      const fileExt = uri.split('.').pop() || 'jpg';
       const fileName = `${user.id}-${Date.now()}.${fileExt}`;
       const filePath = `${user.id}/${fileName}`;
 
